@@ -1,10 +1,16 @@
 from pptx import Presentation
-from logger import LOG
 
-# 删除 PowerPoint 模板中的所有幻灯片
 def remove_all_slides(prs: Presentation):
-    xml_slides = prs.slides._sldIdLst  # 获取幻灯片列表
-    slides = list(xml_slides)  # 转换为列表
+    """
+    移除演示文稿中的所有幻灯片，并清理相关资源。
+    """
+    # 获取所有幻灯片的 ID 列表
+    slides = list(prs.slides._sldIdLst)
+
+    # 遍历并移除每个幻灯片
     for slide in slides:
-        xml_slides.remove(slide)  # 从幻灯片列表中移除每一张幻灯片
-    LOG.debug("模板中的幻灯片已被移除。")
+        rId = slide.rId  # 获取幻灯片的关联资源 ID
+        prs.part.drop_rel(rId)  # 删除关联资源
+        prs.slides._sldIdLst.remove(slide)  # 从幻灯片列表中移除
+
+    print("所有默认幻灯片已被移除。")
